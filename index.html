@@ -30,10 +30,12 @@ import {
   Upload,
   Scan,
   Loader2,
-  FileSpreadsheet
+  RefreshCw,
+  BookOpen,
+  Wrench
 } from 'lucide-react';
 
-// Pre-populated measurement database including real data from KHAMLAR UNIFORM sheet (ທ້າວ องค์คำ เพ็งล้อ - LDB)
+// Pre-populated measurement database including real data from KHAMLAR UNIFORM sheet (ທ້າວ ອົງຄຳ ເພັງລໍ້ - LDB)
 const INITIAL_MEASUREMENTS = [
   {
     id: 'LDB-2026-088',
@@ -65,8 +67,8 @@ const INITIAL_MEASUREMENTS = [
     },
     pants: { waist: '', hips: '', length: '', thigh: '', knee: '', legOpening: '', crotch: '' },
     skirt: { waist: '', hipLevel: '', length: '' },
-    inspector: 'ກວດກາ (อนุมัติแล้ว)',
-    date: '18-10-2026'
+    inspector: 'ກວດກາ (ອນຸມັດແລ້ວ)',
+    date: '18-09-2026'
   },
   {
     id: 'JDB-2026-001',
@@ -98,7 +100,7 @@ const INITIAL_MEASUREMENTS = [
     },
     pants: { waist: '82', hips: '98', length: '101', thigh: '58', knee: '42', legOpening: '20', crotch: '65' },
     skirt: { waist: '', hipLevel: '', length: '' },
-    inspector: 'ช่างเฟือง',
+    inspector: 'ຊ່າງເຟືອງ',
     date: '19-09-2026'
   },
   {
@@ -131,20 +133,20 @@ const INITIAL_MEASUREMENTS = [
     },
     pants: { waist: '86', hips: '102', length: '103', thigh: '60', knee: '44', legOpening: '21', crotch: '67' },
     skirt: { waist: '', hipLevel: '', length: '' },
-    inspector: 'ช่างตี๋',
-    date: '20-10-2026'
+    inspector: 'ຊ່າງຕີ໋',
+    date: '19-09-2026'
   }
 ];
 
 const INITIAL_ORDERS = [
   {
     id: 'JDB-2026-001',
-    customerName: 'ธนาคาร JDB (ชุดยูนิฟอร์ม 50 ท่าน)',
+    customerName: 'ທະນາຄານ JDB (ຊຸດຢູນິຟອມ 50 ທ່ານ)',
     contactPerson: 'ທ່ານ ສຸວະສອນ (Suvason)',
     phone: '020-55512345',
     totalItems: 150,
-    suitFabric: 'ผ้า E45 (เกรดพรีเมียม)',
-    shirtFabric: 'ผ้า LX25 (นำเข้า)',
+    suitFabric: 'ຜ້າ E45 (ເກຣດພຣີມ່ຽມ)',
+    shirtFabric: 'ຜ້າ LX25 (ນຳເຂົ້າ)',
     status: 'In Production',
     progressPercent: 65,
     taxInvoice: true,
@@ -153,60 +155,50 @@ const INITIAL_ORDERS = [
     grandTotal: 242000000,
     startDate: '2026-09-10',
     dueDate: '2026-10-25',
-    tailorCutter: 'ช่างเฟือง & ช่างตี๋ (ช่างตัด)',
-    tailorButtonhole: 'ช่างกุ้ย (เจาะกระดุม)',
+    tailorCutter: 'ຊ່າງເຟືອງ & ຊ່າງຕີ໋ (ຊ່າງຕັດ)',
+    tailorButtonhole: 'ຊ່າງກຸ້ຍ (ເຈາະກະດຸມ)',
     itemsList: [
-      { code: 'JDB-01', item: 'เสื้อสูท + กางเกง', owner: 'คุณสุวะสอน', cutter: 'ช่างเฟือง', sewer: 'ช่างเวียดนาม', buttonhole: 'ช่างกุ้ย', step: 3, status: 'เจาะกระดุมเสร็จแล้ว' },
-      { code: 'JDB-02', item: 'เสื้อสูท + กระโปรง', owner: 'คุณคำพอน', cutter: 'ช่างตี๋', sewer: 'ช่างเวียดนาม', buttonhole: 'ช่างกุ้ย', step: 2, status: 'กำลังเย็บประกอบ' },
-      { code: 'LDB-01', item: 'เสื้อแว็ดสูท', owner: 'ท้าว องค์คำ เพ็งล้อ', cutter: 'ช่างเฟือง', sewer: 'ช่างในร้าน', buttonhole: 'ช่างกุ้ย', step: 1, status: 'ขึ้นแพทเทิร์น & ตัดผ้าเสร็จ' }
-    ]
-  },
-  {
-    id: 'LDB-2026-088',
-    customerName: 'ธนาคาร LDB (ชุดผู้บริหาร)',
-    contactPerson: 'ທ້າວ ອົງຄຳ ເພັງລໍ້',
-    phone: '55338789',
-    totalItems: 12,
-    suitFabric: 'ผ้า Wool 100% นำเข้า',
-    shirtFabric: 'ผ้า Oxford Cotton 100%',
-    status: 'Pattern & Cutting',
-    progressPercent: 35,
-    taxInvoice: true,
-    subtotal: 45000000,
-    vatAmount: 4500000,
-    grandTotal: 49500000,
-    startDate: '2026-10-18',
-    dueDate: '2026-11-15',
-    tailorCutter: 'ช่างเฟือง (Master Cutter)',
-    tailorButtonhole: 'ช่างกุ้ย',
-    itemsList: [
-      { code: 'LDB-2026-088-01', item: 'เสื้อแว็ด (Executive Suit)', owner: 'ທ້າວ ອົງຄຳ ເພັງລໍ້', cutter: 'ช่างเฟือง', sewer: 'ช่างเฟือง', buttonhole: 'ช่างกุ้ย', step: 2, status: 'กำลังตัดผ้าและขึ้นโครง' }
+      { code: 'JDB-01', item: 'ເສື້ອສູດ + ໂສ້ງ', owner: 'ທ່ານ ສຸວະສອນ', cutter: 'ຊ່າງເຟືອງ', sewer: 'ຊ່າງເຟືອງ', buttonhole: 'ຊ່າງກຸ້ຍ', step: 3, status: 'ເຈາະກະດຸມເສັດແລ້ວ' },
+      { code: 'JDB-02', item: 'ເສື້ອສູດ + ສະເກີດ', owner: 'ທ່ານ ຄຳພອນ', cutter: 'ຊ່າງຕີ໋', sewer: 'ຊ່າງຕີ໋', buttonhole: 'ຊ່າງກຸ້ຍ', step: 2, status: 'ກຳລັງເຢັບປະກອບ' },
+      { code: 'LDB-01', item: 'ເສື້ອແວັດສູດ', owner: 'ທ້າວ ອົງຄຳ ເພັງລໍ້', cutter: 'ຊ່າງເຟືອງ', sewer: 'ຊ່າງໃນຮ້ານ', buttonhole: 'ຊ່າງກຸ້ຍ', step: 1, status: 'ຂຶ້ນແພັດເທີນ & ຕັດຜ້າເສັດ' }
     ]
   }
 ];
 
+const INITIAL_BUTTONHOLE_LOGS = [
+  { id: 'BH-001', code: 'JDB-01', item: 'ເສື້ອສູດ JDB 01', recipient: 'ອ້າຍກຸ້ຍ (ຊ່າງເຈາະກະດຸມ)', sendDate: '19-09-2026', returnDate: '20-09-2026', status: 'ສົ່ງແລ້ວ' },
+  { id: 'BH-002', code: 'JDB-02', item: 'ເສື້ອສູດ JDB 02', recipient: 'ອ້າຍກຸ້ຍ (ຊ່າງເຈາະກະດຸມ)', sendDate: '19-09-2026', returnDate: '20-09-2026', status: 'ກຳລັງເຈາະ' }
+];
+
+const INITIAL_ALTERATIONS = [
+  { id: 'ALT-01', customerName: 'ທ້າວ ສຸວະສອນ', code: 'JDB-01', details: 'ເອົາຂ້າງອອກ 1 ນິ້ວ, ເອົາຄວາມຍາວຂາໂສ້ງລົງ 1.5 cm', tailor: 'ຊ່າງເຟືອງ', status: 'ກຳລັງແປງ', date: '19-09-2026' }
+];
+
 export default function App() {
-  // Main Navigation Tabs: 'measurements', 'orders', 'tracking', 'quotation'
+  // Navigation Tabs: 'measurements', 'orders', 'logs', 'tracking', 'quotation'
   const [activeTab, setActiveTab] = useState('measurements');
   
   // App Data States
   const [orders, setOrders] = useState(INITIAL_ORDERS);
   const [measurements, setMeasurements] = useState(INITIAL_MEASUREMENTS);
+  const [buttonholeLogs, setButtonholeLogs] = useState(INITIAL_BUTTONHOLE_LOGS);
+  const [alterations, setAlterations] = useState(INITIAL_ALTERATIONS);
   
   // Search & Filter States
   const [searchQuery, setSearchQuery] = useState('');
   const [branchFilter, setBranchFilter] = useState('ALL');
 
-  // Customer Public Tracking Portal Search State
+  // Customer Tracking Portal
   const [trackingCodeInput, setTrackingCodeInput] = useState('');
   const [searchedTrackingResult, setSearchedTrackingResult] = useState(null);
   const [trackingError, setTrackingError] = useState('');
 
-  // Modals Controls
+  // Modals & Popups
   const [showNewMeasurementModal, setShowNewMeasurementModal] = useState(false);
   const [showAiScanModal, setShowAiScanModal] = useState(false);
+  const [showNewAlterationModal, setShowNewAlterationModal] = useState(false);
   const [selectedPaperForm, setSelectedPaperForm] = useState(null);
-  const [editablePrintCode, setEditablePrintCode] = useState(''); // State ສຳລັບດັດແກ້ລະຫັດທີ່ຈະພິມອອກໃບແບບຟອມ
+  const [editablePrintCode, setEditablePrintCode] = useState('');
   const [showNotificationToast, setShowNotificationToast] = useState(null);
 
   // AI OCR Scanning States
@@ -214,10 +206,10 @@ export default function App() {
   const [isAiScanning, setIsAiScanning] = useState(false);
   const [scannedExtractedData, setScannedExtractedData] = useState(null);
 
-  // Form State for creating a new measurement entry
+  // Form State for new measurement entry
   const [newForm, setNewForm] = useState({
     orderCode: 'LDB',
-    customIdNumber: '', // ລະຫັດກຳນົດເອງ (Custom ID Number)
+    customIdNumber: '',
     customerName: '',
     branch: 'HQ (CIT)',
     phone: '',
@@ -225,7 +217,7 @@ export default function App() {
     weight: '',
     height: '',
     items: { suit: true, shirt: false, vest: false, pants: false, skirt: false },
-    fitStyle: 'mòi ôm ôm (Slim fit)',
+    fitStyle: 'mòi ôm ôm (Slim fit / พอดีตัว)',
     suit: {
       shoulder: '', sleeveLength: '', jacketLength: '', chest: '', chestEase: '+6',
       backShoulder: '', waist: '', upperArm: '', armhole: '', midArm: '', midArmCir: '',
@@ -235,6 +227,14 @@ export default function App() {
     skirt: { waist: '', hipLevel: '', length: '' },
     inspector: 'ກວດກາ (ອນຸມັດແລ້ວ)',
     date: new Date().toISOString().split('T')[0]
+  });
+
+  // Form State for Alterations Log
+  const [newAltForm, setNewAltForm] = useState({
+    customerName: '',
+    code: '',
+    details: '',
+    tailor: 'ຊ່າງເຟືອງ'
   });
 
   // Quotation System State
@@ -254,8 +254,8 @@ export default function App() {
     let shirtPrice = quoteData.shirtFabricPrice;
     const isBulk = (quoteData.qtySuit + quoteData.qtyShirt) >= 10;
     if (isBulk) {
-      suitPrice *= 0.85; // 15% corporate discount for bulk orders
-      shirtPrice *= 0.85;
+      suitPrice *= 0.80; // 20% corporate discount for bulk uniform orders
+      shirtPrice *= 0.80;
     }
     const subtotal = (suitPrice * quoteData.qtySuit) + (shirtPrice * quoteData.qtyShirt);
     const vat = quoteData.includeTax ? subtotal * 0.10 : 0;
@@ -280,17 +280,19 @@ export default function App() {
     setShowNewMeasurementModal(false);
     triggerToast(`ບັນທຶກແບບຟອມແທກຂະໜາດ ແລະ ລະຫັດ ${newEntry.id} ສຳເລັດ!`);
   };
-  };
 
-  const handleAddNewMeasurement = (e) => {
+  const handleAddAlteration = (e) => {
     e.preventDefault();
-    const newEntry = {
-      ...newForm,
-      id: `${newForm.orderCode}-2026-${Math.floor(100 + Math.random() * 900)}`
+    const newAlt = {
+      id: `ALT-0${alterations.length + 1}`,
+      ...newAltForm,
+      status: 'ກຳລັງແປງ',
+      date: '19-09-2026'
     };
-    setMeasurements([newEntry, ...measurements]);
-    setShowNewMeasurementModal(false);
-    triggerToast(`ບັນທຶກແບບຟອມແທກຂະໜາດສຳລັບ ${newForm.customerName} ສຳເລັດ!`);
+    setAlterations([newAlt, ...alterations]);
+    setShowNewAlterationModal(false);
+    setNewAltForm({ customerName: '', code: '', details: '', tailor: 'ຊ່າງເຟືອງ' });
+    triggerToast('ບັນທຶກລາຍການແປງເຄື່ອງລົງປຶ້ມຮຽບຮ້ອຍແລ້ວ');
   };
 
   // AI OCR Photo Process Simulator
@@ -303,7 +305,6 @@ export default function App() {
     setIsAiScanning(true);
     setScannedExtractedData(null);
 
-    // Simulate AI Vision OCR Processing pipeline
     setTimeout(() => {
       setIsAiScanning(false);
       const randomCode = Math.floor(100 + Math.random() * 900);
@@ -319,29 +320,18 @@ export default function App() {
         items: { suit: true, shirt: true, vest: false, pants: true, skirt: false },
         fitStyle: 'mòi ôm ôm (Slim fit)',
         suit: {
-          shoulder: '46.5',
-          sleeveLength: '59.5',
-          jacketLength: '70',
-          chest: '98',
-          chestEase: '+5',
-          backShoulder: '40',
-          waist: '84',
-          upperArm: '35',
-          armhole: '21',
-          midArm: '33',
-          midArmCir: '28.5',
-          cuff: '13',
-          hips: '99',
-          shirtWrist: '17.5',
-          shirtNeck: '39.5'
+          shoulder: '46.5', sleeveLength: '59.5', jacketLength: '70', chest: '98',
+          chestEase: '+5', backShoulder: '40', waist: '84', upperArm: '35',
+          armhole: '21', midArm: '33', midArmCir: '28.5', cuff: '13', hips: '99',
+          shirtWrist: '17.5', shirtNeck: '39.5'
         },
         pants: { waist: '84', hips: '99', length: '102', thigh: '59', knee: '43', legOpening: '20.5', crotch: '66' },
         skirt: { waist: '', hipLevel: '', length: '' },
         inspector: 'AI OCR Scan Auto-Detected',
-        date: new Date().toISOString().split('T')[0]
+        date: '19-09-2026'
       });
       triggerToast('✨ AI ສະແກນ ແລະ ດຶງຂໍ້ມູນຈາກຮູບພາບສຳເລັດແລ້ວ!');
-    }, 2200);
+    }, 2000);
   };
 
   const handleSaveScannedDataToDb = () => {
@@ -419,11 +409,10 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-slate-100 text-slate-800 flex flex-col font-sans">
-      {/* ==================== TOP NAVIGATION BAR ==================== */}
+      {/* Top Header */}
       <header className="bg-slate-900 text-white shadow-xl sticky top-0 z-40 border-b border-amber-500/40">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           
-          {/* Logo & Shop Title */}
           <div className="flex items-center space-x-3">
             <div className="bg-gradient-to-tr from-amber-500 via-amber-400 to-yellow-300 p-2 rounded-xl text-slate-950 font-black shadow-md flex items-center justify-center">
               <Scissors className="w-6 h-6 stroke-[2.5]" />
@@ -443,11 +432,10 @@ export default function App() {
             </div>
           </div>
 
-          {/* Navigation Links */}
           <nav className="hidden md:flex space-x-1">
             <button
               onClick={() => setActiveTab('measurements')}
-              className={`px-3.5 py-2 rounded-xl text-xs font-bold flex items-center space-x-2 transition ${
+              className={`px-3 py-2 rounded-xl text-xs font-bold flex items-center space-x-1.5 transition ${
                 activeTab === 'measurements' 
                   ? 'bg-amber-500 text-slate-950 shadow-lg shadow-amber-500/20' 
                   : 'text-slate-300 hover:bg-slate-800 hover:text-white'
@@ -459,80 +447,56 @@ export default function App() {
 
             <button
               onClick={() => setActiveTab('orders')}
-              className={`px-3.5 py-2 rounded-xl text-xs font-bold flex items-center space-x-2 transition ${
+              className={`px-3 py-2 rounded-xl text-xs font-bold flex items-center space-x-1.5 transition ${
                 activeTab === 'orders' 
                   ? 'bg-amber-500 text-slate-950 shadow-lg shadow-amber-500/20' 
                   : 'text-slate-300 hover:bg-slate-800 hover:text-white'
               }`}
             >
               <FileText className="w-4 h-4" />
-              <span>2. ຕິດຕາມການຜະລິດ (Orders)</span>
+              <span>2. ຕິດຕາມການຜະລິດ</span>
+            </button>
+
+            <button
+              onClick={() => setActiveTab('logs')}
+              className={`px-3 py-2 rounded-xl text-xs font-bold flex items-center space-x-1.5 transition ${
+                activeTab === 'logs' 
+                  ? 'bg-amber-500 text-slate-950 shadow-lg shadow-amber-500/20' 
+                  : 'text-slate-300 hover:bg-slate-800 hover:text-white'
+              }`}
+            >
+              <BookOpen className="w-4 h-4" />
+              <span>3. ປຶ້ມເຈາະກະດຸມ & ແປງເຄື່ອງ</span>
             </button>
 
             <button
               onClick={() => setActiveTab('tracking')}
-              className={`px-3.5 py-2 rounded-xl text-xs font-bold flex items-center space-x-2 transition ${
+              className={`px-3 py-2 rounded-xl text-xs font-bold flex items-center space-x-1.5 transition ${
                 activeTab === 'tracking' 
                   ? 'bg-amber-500 text-slate-950 shadow-lg shadow-amber-500/20' 
                   : 'text-slate-300 hover:bg-slate-800 hover:text-white'
               }`}
             >
               <PackageCheck className="w-4 h-4" />
-              <span>3. ລູກຄ້າກວດສະຖານະ (Tracking)</span>
+              <span>4. ເຊັກສະຖານະ</span>
             </button>
 
             <button
               onClick={() => setActiveTab('quotation')}
-              className={`px-3.5 py-2 rounded-xl text-xs font-bold flex items-center space-x-2 transition ${
+              className={`px-3 py-2 rounded-xl text-xs font-bold flex items-center space-x-1.5 transition ${
                 activeTab === 'quotation' 
                   ? 'bg-amber-500 text-slate-950 shadow-lg shadow-amber-500/20' 
                   : 'text-slate-300 hover:bg-slate-800 hover:text-white'
               }`}
             >
               <DollarSign className="w-4 h-4" />
-              <span>4. ຄຳນວນລາຄາ & ໃບສະເໜີ</span>
+              <span>5. ໃບສະເໜີລາຄາ</span>
             </button>
           </nav>
         </div>
-
-        {/* Mobile Navigation Row */}
-        <div className="md:hidden flex overflow-x-auto bg-slate-950 px-2 py-2 gap-1 border-t border-slate-800 text-xs">
-          <button
-            onClick={() => setActiveTab('measurements')}
-            className={`whitespace-nowrap px-3 py-1.5 rounded-lg font-bold flex items-center gap-1 ${
-              activeTab === 'measurements' ? 'bg-amber-500 text-slate-950' : 'text-slate-300'
-            }`}
-          >
-            <Ruler className="w-3.5 h-3.5" /> Size DB
-          </button>
-          <button
-            onClick={() => setActiveTab('orders')}
-            className={`whitespace-nowrap px-3 py-1.5 rounded-lg font-bold flex items-center gap-1 ${
-              activeTab === 'orders' ? 'bg-amber-500 text-slate-950' : 'text-slate-300'
-            }`}
-          >
-            <FileText className="w-3.5 h-3.5" /> ສັ່ງຕັດ/ຊ່າງ
-          </button>
-          <button
-            onClick={() => setActiveTab('tracking')}
-            className={`whitespace-nowrap px-3 py-1.5 rounded-lg font-bold flex items-center gap-1 ${
-              activeTab === 'tracking' ? 'bg-amber-500 text-slate-950' : 'text-slate-300'
-            }`}
-          >
-            <PackageCheck className="w-3.5 h-3.5" /> ເຊັກສະຖານະ
-          </button>
-          <button
-            onClick={() => setActiveTab('quotation')}
-            className={`whitespace-nowrap px-3 py-1.5 rounded-lg font-bold flex items-center gap-1 ${
-              activeTab === 'quotation' ? 'bg-amber-500 text-slate-950' : 'text-slate-300'
-            }`}
-          >
-            <DollarSign className="w-3.5 h-3.5" /> ໃບສະເໜີລາຄາ
-          </button>
-        </div>
       </header>
 
-      {/* Toast Notification Popup */}
+      {/* Toast Notification */}
       {showNotificationToast && (
         <div className="fixed bottom-5 right-5 z-50 bg-slate-900 text-amber-400 border border-amber-500/50 px-4 py-3 rounded-2xl shadow-2xl flex items-center gap-3 animate-bounce">
           <Sparkles className="w-5 h-5 text-amber-400" />
@@ -543,10 +507,10 @@ export default function App() {
       {/* Main Content Area */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-1 w-full">
 
-        {/* ==================== TAB 1: MEASUREMENTS (SIZE DB & PHYSICAL PAPER FORM) ==================== */}
+        {/* ==================== TAB 1: MEASUREMENTS (SIZE DB) ==================== */}
+        {}
         {activeTab === 'measurements' && (
           <div className="space-y-6">
-            {/* Header Toolbar */}
             <div className="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
               <div>
                 <div className="flex items-center gap-2">
@@ -564,7 +528,6 @@ export default function App() {
                 </div>
               </div>
 
-              {/* Action Controls */}
               <div className="flex flex-wrap items-center gap-2 w-full lg:w-auto">
                 <div className="relative flex-1 lg:w-60">
                   <Search className="w-4 h-4 absolute left-3 top-2.5 text-slate-400" />
@@ -587,7 +550,6 @@ export default function App() {
                   <option value="ສາຂາໂພນຕ້ອງ">ສາຂາໂພນຕ້ອງ</option>
                 </select>
 
-                {/* AI Photo Scan Button */}
                 <button
                   onClick={() => setShowAiScanModal(true)}
                   className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-bold px-4 py-2 rounded-xl text-xs flex items-center gap-1.5 transition shadow-md whitespace-nowrap"
@@ -606,7 +568,6 @@ export default function App() {
               </div>
             </div>
 
-            {/* Measurement List Cards Grid */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {measurements
                 .filter(m => {
@@ -620,7 +581,6 @@ export default function App() {
                 .map((m) => (
                   <div key={m.id} className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden hover:border-amber-400 transition flex flex-col justify-between">
                     
-                    {/* Header Box */}
                     <div className="bg-slate-900 text-white p-4 flex justify-between items-start">
                       <div>
                         <div className="flex items-center gap-2">
@@ -651,9 +611,7 @@ export default function App() {
                       </button>
                     </div>
 
-                    {/* Breakdown Body */}
                     <div className="p-4 space-y-3 text-xs">
-                      {/* Checkbox badge status */}
                       <div className="flex flex-wrap gap-1.5 pb-2 border-b border-slate-100">
                         <span className="font-semibold text-slate-500 mr-1">ລາຍການ:</span>
                         {m.items.suit && <span className="bg-amber-100 text-amber-900 px-2 py-0.5 rounded-md font-bold text-[11px]">✓ ເສື້ອແວັດ (Suit)</span>}
@@ -663,26 +621,23 @@ export default function App() {
                         {m.items.skirt && <span className="bg-pink-100 text-pink-900 px-2 py-0.5 rounded-md font-bold text-[11px]">✓ ສະເກີດ</span>}
                       </div>
 
-                      {/* Jacket / Suit Measurements */}
                       <div className="bg-slate-50 p-3 rounded-xl border border-slate-200">
                         <div className="font-bold text-amber-900 border-b pb-1.5 mb-2 flex justify-between items-center text-xs">
-                          <span>ຂະໜາດ ເສື້ອແວັດ / ເສື້ອເຊີດ / ເສື້ອເກັກ</span>
+                          <span>ຂະໜາດ ເສື້ອແວັດ / ເສື້ອເຊີດ</span>
                           {m.fitStyle && <span className="text-[11px] font-medium text-slate-600 bg-amber-100/60 px-2 py-0.5 rounded-md">{m.fitStyle}</span>}
                         </div>
                         <div className="grid grid-cols-3 sm:grid-cols-4 gap-2 text-slate-700 text-[11px]">
-                          <div>ບ່າໄຫລ່: <b className="text-slate-900">{m.suit.shoulder || '-'}</b></div>
+                          <div>ບ່າໄຫຼ່: <b className="text-slate-900">{m.suit.shoulder || '-'}</b></div>
                           <div>ຍາວແຂນ: <b className="text-slate-900">{m.suit.sleeveLength || '-'}</b></div>
                           <div>ຍາວເສື້ອ: <b className="text-slate-900">{m.suit.jacketLength || '-'}</b></div>
                           <div>ຮອບອົກ: <b className="text-amber-900 font-bold">{m.suit.chest ? `${m.suit.chest} ${m.suit.chestEase}` : '-'}</b></div>
                           <div>ບ່າຫຼັງ/ແອວ: <b className="text-slate-900">{m.suit.backShoulder ? `${m.suit.backShoulder}/${m.suit.waist}` : '-'}</b></div>
                           <div>ຕົ້ນແຂນ/ຮອບ: <b className="text-slate-900">{m.suit.upperArm ? `${m.suit.upperArm}/${m.suit.armhole}` : '-'}</b></div>
-                          <div>ຕົກແຂນ/ຮອບ: <b className="text-slate-900">{m.suit.midArm ? `${m.suit.midArm}/${m.suit.midArmCir}` : '-'}</b></div>
                           <div>ປາຍມື: <b className="text-slate-900">{m.suit.cuff || '-'}</b></div>
                           <div>ຮອບສະໂພກ: <b className="text-slate-900">{m.suit.hips || '-'}</b></div>
                         </div>
                       </div>
 
-                      {/* Footer Details */}
                       <div className="flex justify-between items-center pt-2 text-[11px] text-slate-500 border-t border-slate-100">
                         <div className="flex items-center gap-1">
                           <UserCheck className="w-3.5 h-3.5 text-emerald-600" />
@@ -701,7 +656,8 @@ export default function App() {
           </div>
         )}
 
-        {/* ==================== TAB 2: ORDERS MANAGEMENT & PRODUCTION PIPELINE ==================== */}
+        {/* ==================== TAB 2: ORDERS MANAGEMENT ==================== */}
+        {}
         {activeTab === 'orders' && (
           <div className="space-y-6">
             <div className="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
@@ -722,7 +678,6 @@ export default function App() {
               </div>
             </div>
 
-            {/* Orders List Cards */}
             <div className="space-y-4">
               {orders.map((o) => (
                 <div key={o.id} className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
@@ -819,7 +774,91 @@ export default function App() {
           </div>
         )}
 
-        {/* ==================== TAB 3: CUSTOMER PUBLIC TRACKING PORTAL ==================== */}
+        {/* ==================== TAB 3: BUTTONHOLE & ALTERATIONS LOGBOOK ==================== */}
+        {}
+        {activeTab === 'logs' && (
+          <div className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              
+              {/* Buttonhole Handover Book */}
+              <div className="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 space-y-4">
+                <div className="flex justify-between items-center border-b pb-3">
+                  <div>
+                    <h3 className="font-bold text-slate-900 text-base flex items-center gap-2">
+                      <BookOpen className="w-5 h-5 text-amber-600" />
+                      ປຶ້ມບັນທຶກສົ່ງເຄື່ອງເຈາະກະດຸມ
+                    </h3>
+                    <p className="text-xs text-slate-500">
+                      ບັນທຶກສົ່ງສິນຄ້າໃຫ້ຊ່າງເຈາະກະດຸມ (ອ້າຍກຸ້ຍ) ແລະ ກວດຮັບຄືນ
+                    </p>
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  {buttonholeLogs.map((log) => (
+                    <div key={log.id} className="p-3 bg-slate-50 rounded-xl border border-slate-200 flex justify-between items-center text-xs">
+                      <div>
+                        <span className="font-bold text-amber-900 bg-amber-100 px-2 py-0.5 rounded text-[11px] mr-2">{log.code}</span>
+                        <span className="font-bold text-slate-800">{log.item}</span>
+                        <div className="text-[11px] text-slate-500 mt-1">
+                          ຜູ້ຮັບ: <b>{log.recipient}</b> | ສົ່ງວັນທີ: {log.sendDate}
+                        </div>
+                      </div>
+                      <span className={`px-2.5 py-1 rounded-full text-[11px] font-bold ${
+                        log.status === 'ສົ່ງແລ້ວ' ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'
+                      }`}>
+                        {log.status}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Alterations Book */}
+              <div className="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 space-y-4">
+                <div className="flex justify-between items-center border-b pb-3">
+                  <div>
+                    <h3 className="font-bold text-slate-900 text-base flex items-center gap-2">
+                      <Wrench className="w-5 h-5 text-indigo-600" />
+                      ປຶ້ມບັນທຶກແປງເຄື່ອງ (Alterations Log)
+                    </h3>
+                    <p className="text-xs text-slate-500">
+                      ຈົດລາຍລະອຽດແປງເຄື່ອງ (ເອົາຂ້າງອອກ, ເອົາຄ່າຂາສົ່ງລົງ) ເມື່ອລູກຄ້າລອງເຄື່ອງ
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => setShowNewAlterationModal(true)}
+                    className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-3 py-1.5 rounded-xl text-xs flex items-center gap-1 shadow-sm"
+                  >
+                    <Plus className="w-4 h-4" /> ບັນທຶກແປງເຄື່ອງ
+                  </button>
+                </div>
+
+                <div className="space-y-2">
+                  {alterations.map((alt) => (
+                    <div key={alt.id} className="p-3 bg-slate-50 rounded-xl border border-slate-200 text-xs space-y-1">
+                      <div className="flex justify-between items-center">
+                        <span className="font-bold text-slate-900 text-sm">{alt.customerName} ({alt.code})</span>
+                        <span className="bg-indigo-100 text-indigo-800 px-2 py-0.5 rounded font-bold text-[11px]">{alt.status}</span>
+                      </div>
+                      <div className="text-slate-700 bg-white p-2 rounded border border-slate-200 text-[11px]">
+                        📝 <b>ລາຍລະອຽດແປງ:</b> {alt.details}
+                      </div>
+                      <div className="text-[11px] text-slate-500 flex justify-between pt-1">
+                        <span>ຊ່າງຜູ້ແປງ: <b>{alt.tailor}</b></span>
+                        <span>ວັນທີ: {alt.date}</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+            </div>
+          </div>
+        )}
+
+        {/* ==================== TAB 4: CUSTOMER TRACKING PORTAL ==================== */}
+        {}
         {activeTab === 'tracking' && (
           <div className="max-w-3xl mx-auto space-y-6">
             <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 text-center space-y-3">
@@ -830,7 +869,7 @@ export default function App() {
                 ກວດສອບສະຖານະການຕັດເຢັບ (Customer Tracking Portal)
               </h2>
               <p className="text-xs text-slate-500 max-w-md mx-auto">
-                ລູກຄ້າສາມາດປ້ອນ <b>ລະຫັດໃບແທກ (ເຊັ່ນ LDB-2026-088)</b> ຫຼື <b>ເບີໂທລະສັບ</b> ເພື່ອຕິດຕາມສະຖານະຄວາມຄືບໜ້າຊຸດຂອງທ່ານໄດ້ຕະຫຼອດ 24 ຊົ່ວໂມງ
+                ລູກຄ້າສາມາດປ້ອນ <b>ລະຫັດໃບແທກ (ເຊັ່ນ LDB-2026-088)</b> ຫຼື <b>ເບີໂທລະສັບ</b> ເພື່ອຕິດຕາມສະຖານະຄວາມຄືບໜ້າຊຸດຂອງທ່ານ
               </p>
 
               <form onSubmit={handleSearchCustomerTracking} className="flex gap-2 max-w-md mx-auto pt-2">
@@ -857,7 +896,7 @@ export default function App() {
             </div>
 
             {searchedTrackingResult && (
-              <div className="bg-white p-6 rounded-2xl shadow-md border border-amber-300 space-y-6 animate-fadeIn">
+              <div className="bg-white p-6 rounded-2xl shadow-md border border-amber-300 space-y-6">
                 <div className="flex justify-between items-start border-b pb-4">
                   <div>
                     <span className="text-xs font-bold bg-amber-500 text-slate-950 px-2.5 py-0.5 rounded">
@@ -933,7 +972,8 @@ export default function App() {
           </div>
         )}
 
-        {/* ==================== TAB 4: QUOTATION & TAX SYSTEM ==================== */}
+        {/* ==================== TAB 5: QUOTATION & VAT SYSTEM ==================== */}
+        {}
         {activeTab === 'quotation' && (
           <div className="space-y-6">
             <div className="bg-white p-5 rounded-2xl shadow-sm border border-slate-200">
@@ -942,7 +982,7 @@ export default function App() {
                 ຄຳນວນລາຄາ & ໃບສະເໜີລາຄາ (Quotation & VAT Calculator)
               </h2>
               <p className="text-xs text-slate-500 mt-0.5">
-                ຄຳນວນລາຄາຍູນິຟອມອົງກອນ ສ່ວນຫຼຸດສັ່ງຕັດຈຳນວນຫຼາຍ ແລະ ພາສີອາກອນ 10% ສຳລັບຮ້ານ KHAMLAR UNIFORM
+                ຄຳນວນລາຄາຍູນິຟອມອົງກອນ ສ່ວນຫຼຸດສັ່ງຕັດຈຳນວນຫຼາຍ (Bulk 10+ ຊຸດ ຫຼຸດ 20%) ແລະ ພາສີອາກອນ 10%
               </p>
             </div>
 
@@ -1034,7 +1074,7 @@ export default function App() {
                         
                         {calc.isDiscounted && (
                           <div className="text-emerald-400 text-[11px] font-bold">
-                            ✓ ສ່ວນຫຼຸດອໍເດີອົງກອນໃຫຍ່ (Bulk Discount 15%)
+                            ✓ ສ່ວນຫຼຸດອໍເດີອົງກອນ (Bulk Discount 20%)
                           </div>
                         )}
 
@@ -1071,12 +1111,11 @@ export default function App() {
         )}
       </main>
 
-      {/* ==================== NEW MODAL: AI PHOTO SCAN & OCR UPLOAD ==================== */}
+      {/* ==================== MODAL 1: AI PHOTO SCAN ==================== */}
+      {}
       {showAiScanModal && (
         <div className="fixed inset-0 bg-slate-900/80 backdrop-blur-md z-50 flex items-center justify-center p-4 overflow-y-auto">
           <div className="bg-white rounded-3xl max-w-3xl w-full p-6 shadow-2xl space-y-5 border border-purple-200 max-h-[92vh] overflow-y-auto text-xs">
-            
-            {/* Modal Header */}
             <div className="flex justify-between items-center border-b pb-3">
               <div className="flex items-center gap-2">
                 <div className="p-2 bg-gradient-to-tr from-purple-600 to-indigo-600 text-white rounded-xl shadow">
@@ -1103,7 +1142,6 @@ export default function App() {
               </button>
             </div>
 
-            {/* Dropzone Upload Area */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-3">
                 <label className="block font-bold text-slate-700">1. ເລືອກ ຫຼື ຖ່າຍຮູບແບບຟອມແທກຂະໜາດ:</label>
@@ -1136,13 +1174,8 @@ export default function App() {
                     </div>
                   )}
                 </div>
-
-                <div className="text-[11px] text-slate-500 bg-slate-50 p-3 rounded-xl border border-slate-200">
-                  💡 <b>ຄຳແນະນຳ:</b> ຖ່າຍຮູບໃບແບບຟອມໃຫ້ເຫັນຕົວເລກບ່າໄຫຼ່, ອົກ, ແອວ, ເບີໂທ ແລະ ຊື່ລູກຄ້າຊັດເຈນ ເພື່ອຄວາມແນ່ນອນ 99.8%.
-                </div>
               </div>
 
-              {/* Scanned Result Review Box */}
               <div className="space-y-3 flex flex-col justify-between">
                 <label className="block font-bold text-slate-700">2. ຂໍ້ມູນທີ່ AI ສະແກນໄດ້ (Review Data):</label>
 
@@ -1173,245 +1206,94 @@ export default function App() {
 
                     <div className="space-y-1 pt-1 text-slate-800">
                       <div>ຊື່ລູກຄ້າ: <b className="text-slate-900">{scannedExtractedData.customerName}</b></div>
-                      <div>ເບີໂທ: <b className="text-slate-900">{scannedExtractedData.phone}</b> | ສາຂາ: <b>{scannedExtractedData.branch}</b></div>
-                      <div className="pt-2 font-bold text-purple-900 border-t border-emerald-200">ຂະໜາດເສື້ອແວັດ / ເຊີດທີ່ AI ດຶງໄດ້:</div>
-                      <div className="grid grid-cols-2 gap-1 text-[11px] text-slate-700 bg-white p-2 rounded-xl border border-emerald-200">
-                        <div>ບ່າໄຫລ່: <b>{scannedExtractedData.suit.shoulder} cm</b></div>
+                      <div>ເບີໂທ: <b className="text-slate-900">{scannedExtractedData.phone}</b></div>
+                      <div className="grid grid-cols-2 gap-1 text-[11px] text-slate-700 bg-white p-2 rounded-xl border border-emerald-200 mt-2">
+                        <div>ບ່າໄຫຼ່: <b>{scannedExtractedData.suit.shoulder} cm</b></div>
                         <div>ຮອບອົກ: <b>{scannedExtractedData.suit.chest} {scannedExtractedData.suit.chestEase}</b></div>
                         <div>ຍາວແຂນ: <b>{scannedExtractedData.suit.sleeveLength} cm</b></div>
                         <div>ຍາວເສື້ອ: <b>{scannedExtractedData.suit.jacketLength} cm</b></div>
-                        <div>ຮອບແອວ: <b>{scannedExtractedData.suit.waist} cm</b></div>
-                        <div>ປາຍມື: <b>{scannedExtractedData.suit.cuff} cm</b></div>
                       </div>
                     </div>
 
                     <button
                       onClick={handleSaveScannedDataToDb}
-                      className="w-full mt-3 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold py-2.5 rounded-xl shadow-md transition flex items-center justify-center gap-1.5 text-xs"
+                      className="w-full mt-3 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold py-2 rounded-xl shadow transition text-xs"
                     >
-                      <FileCheck className="w-4 h-4" /> ຢືນຢັນ & ບັນທຶກລົງ Size DB
+                      <FileCheck className="w-4 h-4 inline mr-1" /> ຢືນຢັນ & ບັນທຶກລົງ Size DB
                     </button>
                   </div>
                 )}
               </div>
             </div>
-
-            {/* Modal Footer */}
-            <div className="pt-3 border-t flex justify-end gap-2">
-              <button
-                type="button"
-                onClick={() => {
-                  setShowAiScanModal(false);
-                  setUploadedImagePreview(null);
-                  setScannedExtractedData(null);
-                }}
-                className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-bold"
-              >
-                ຍົກເລີກ
-              </button>
-            </div>
           </div>
         </div>
       )}
 
-      {/* ==================== MODAL 2: DIGITAL PHYSICAL CLIPBOARD SHEET (KHAMLAR UNIFORM) ==================== */}
+      {/* ==================== MODAL 2: PRINTABLE PHYSICAL FORM SHEET ==================== */}
       {selectedPaperForm && (
         <div className="fixed inset-0 bg-slate-900/80 backdrop-blur-md z-50 flex items-center justify-center p-4 overflow-y-auto">
           <div className="bg-slate-300 rounded-3xl max-w-2xl w-full p-6 shadow-2xl relative border-4 border-slate-400/50 max-h-[94vh] overflow-y-auto">
-            
-            <div className="absolute top-2 left-1/2 -translate-x-1/2 w-48 h-8 bg-gradient-to-b from-slate-400 via-slate-200 to-slate-500 rounded-b-2xl border border-slate-600 shadow-lg flex items-center justify-center">
-              <div className="w-20 h-2 bg-slate-800 rounded-full"></div>
-            </div>
-
-            <div className="bg-white rounded-lg p-6 shadow-xl border border-slate-300 mt-5 text-slate-900 font-sans space-y-4 print:shadow-none print:border-none print:p-2">
+            <div className="bg-white rounded-lg p-6 shadow-xl border border-slate-300 text-slate-900 font-sans space-y-4">
               <div className="flex justify-between items-start border-b-2 border-slate-900 pb-3">
                 <div>
                   <h1 className="text-2xl font-black tracking-tight text-slate-900 italic">
                     KHAMLAR <span className="text-xs not-italic font-normal block text-slate-600">- UNIFORM - (ຄໍາລາ ຢູນິຟອມ)</span>
                   </h1>
                 </div>
-                <div className="text-right space-y-1">
+                <div className="text-right">
                   <h2 className="text-xl font-black text-slate-800">ແບບຟອມແທກເຄື່ອງ</h2>
-                  
-                  {/* Custom Print Code Input & Barcode Tag */}
-                  <div className="flex flex-col items-end gap-1">
-                    <div className="flex items-center gap-1.5 bg-red-50 border-2 border-red-600 rounded-lg p-1.5 shadow-sm">
-                      <span className="text-xs font-bold text-red-700 whitespace-nowrap">ລະຫັດພິມໃສ່ຟອມ:</span>
-                      <input
-                        type="text"
-                        value={editablePrintCode}
-                        onChange={(e) => setEditablePrintCode(e.target.value)}
-                        className="bg-white border border-red-300 font-black text-sm text-red-900 px-2 py-0.5 rounded w-36 text-center outline-none focus:ring-2 focus:ring-red-500 print:border-none print:bg-transparent print:p-0 print:w-auto"
-                        placeholder="ປ້ອນລະຫັດ..."
-                      />
-                    </div>
-                    {/* Simulated Printable Barcode */}
-                    <div className="flex items-center gap-0.5 bg-white px-2 py-1 rounded border border-slate-300 shadow-2xs">
-                      <div className="h-5 w-1 bg-black"></div>
-                      <div className="h-5 w-0.5 bg-black"></div>
-                      <div className="h-5 w-2 bg-black"></div>
-                      <div className="h-5 w-0.5 bg-slate-200"></div>
-                      <div className="h-5 w-1 bg-black"></div>
-                      <div className="h-5 w-1.5 bg-black"></div>
-                      <div className="h-5 w-0.5 bg-black"></div>
-                      <div className="h-5 w-2 bg-black"></div>
-                      <span className="text-[10px] font-mono ml-1.5 font-bold text-slate-800 tracking-wider">
-                        {editablePrintCode || selectedPaperForm.id}
-                      </span>
-                    </div>
-                  </div>
-
+                  <div className="font-mono text-xs font-bold text-red-600">{editablePrintCode || selectedPaperForm.id}</div>
                 </div>
               </div>
 
               <div className="text-xs space-y-2 border-b pb-3">
-                <div className="flex flex-wrap items-baseline gap-2">
-                  <span className="font-bold">ຊື່ ແລະ ນາມສະກຸນ:</span>
-                  <span className="font-bold text-sm text-blue-900 border-b border-dotted border-slate-600 px-2 flex-1">
-                    {selectedPaperForm.customerName}
-                  </span>
-                  <span className="font-bold ml-2">(ສາຂາ):</span>
-                  <span className="border-b border-dotted border-slate-600 px-2 font-semibold">
-                    {selectedPaperForm.branch}
-                  </span>
-                </div>
-
-                <div className="grid grid-cols-3 gap-2">
-                  <div>
-                    <span className="font-bold">ເບີໂທ:</span>
-                    <span className="ml-1 border-b border-dotted border-slate-600 font-semibold">{selectedPaperForm.phone}</span>
-                  </div>
-                  <div>
-                    <span className="font-bold">ອາຍຸ:</span>
-                    <span className="ml-1 border-b border-dotted border-slate-600">{selectedPaperForm.age || '-'}</span>
-                  </div>
-                  <div>
-                    <span className="font-bold">ນ້ຳໜັກ/ຄວາມສູງ:</span>
-                    <span className="ml-1 border-b border-dotted border-slate-600">
-                      {selectedPaperForm.weight ? `${selectedPaperForm.weight}kg / ${selectedPaperForm.height}cm` : '-'}
-                    </span>
-                  </div>
-                </div>
-
-                <div className="flex flex-wrap items-center gap-4 pt-1 font-semibold text-[11px]">
-                  <span>ລາຍການ:</span>
-                  <label className="flex items-center gap-1"><input type="checkbox" checked={selectedPaperForm.items.suit} readOnly /> ເສື້ອແວັດ</label>
-                  <label className="flex items-center gap-1"><input type="checkbox" checked={selectedPaperForm.items.shirt} readOnly /> ເສື້ອເຊີດ</label>
-                  <label className="flex items-center gap-1"><input type="checkbox" checked={selectedPaperForm.items.vest} readOnly /> ເສື້ອເກັກ</label>
-                  <label className="flex items-center gap-1"><input type="checkbox" checked={selectedPaperForm.items.pants} readOnly /> ໂສົ່ງ</label>
-                  <label className="flex items-center gap-1"><input type="checkbox" checked={selectedPaperForm.items.skirt} readOnly /> ສະເກີດ</label>
-                </div>
-              </div>
-
-              <div className="border border-slate-300 rounded-lg overflow-hidden">
-                <div className="bg-slate-200 px-3 py-1 font-bold text-xs text-center border-b border-slate-300">
-                  ຂະໜາດ ເສື້ອແວັດ / ເສື້ອເຊີດ / ເສື້ອເກັກ
-                </div>
-                <div className="p-3 text-xs grid grid-cols-2 gap-x-6 gap-y-2">
-                  <div className="flex justify-between border-b border-slate-200 pb-1">
-                    <span>ບ່າໄຫລ່:</span>
-                    <span className="font-bold text-slate-900">{selectedPaperForm.suit.shoulder || '-'}</span>
-                  </div>
-                  <div className="flex justify-between border-b border-slate-200 pb-1">
-                    <span>ຮອບອົກ:</span>
-                    <span className="font-bold text-blue-900">{selectedPaperForm.suit.chest ? `${selectedPaperForm.suit.chest} ${selectedPaperForm.suit.chestEase}` : '-'}</span>
-                  </div>
-                  <div className="flex justify-between border-b border-slate-200 pb-1">
-                    <span>ຍາວແຂນ:</span>
-                    <span className="font-bold text-slate-900">{selectedPaperForm.suit.sleeveLength || '-'}</span>
-                  </div>
-                  <div className="flex justify-between border-b border-slate-200 pb-1">
-                    <span>ບ່າຫຼັງ / ຮອບແອວ:</span>
-                    <span className="font-bold text-slate-900">
-                      {selectedPaperForm.suit.backShoulder ? `${selectedPaperForm.suit.backShoulder} / ${selectedPaperForm.suit.waist}` : '-'}
-                    </span>
-                  </div>
-                  <div className="flex justify-between border-b border-slate-200 pb-1">
-                    <span>ຍາວເສື້ອ:</span>
-                    <span className="font-bold text-slate-900">{selectedPaperForm.suit.jacketLength || '-'}</span>
-                  </div>
-                  <div className="flex justify-between border-b border-slate-200 pb-1">
-                    <span>ຕົ້ນແຂນ / ຮອບ:</span>
-                    <span className="font-bold text-slate-900">
-                      {selectedPaperForm.suit.upperArm ? `${selectedPaperForm.suit.upperArm} / ${selectedPaperForm.suit.armhole}` : '-'}
-                    </span>
-                  </div>
-                  <div className="flex justify-between border-b border-slate-200 pb-1">
-                    <span>ຕົກແຂນລົງ / ຮອບ:</span>
-                    <span className="font-bold text-slate-900">
-                      {selectedPaperForm.suit.midArm ? `${selectedPaperForm.suit.midArm} / ${selectedPaperForm.suit.midArmCir}` : '-'}
-                    </span>
-                  </div>
-                  <div className="flex justify-between border-b border-slate-200 pb-1">
-                    <span>ປາຍມື:</span>
-                    <span className="font-bold text-slate-900">{selectedPaperForm.suit.cuff || '-'}</span>
-                  </div>
-                  <div className="flex justify-between border-b border-slate-200 pb-1">
-                    <span>ຮອບສະໂພກ:</span>
-                    <span className="font-bold text-slate-900">{selectedPaperForm.suit.hips || '-'}</span>
-                  </div>
-                  <div className="flex justify-between border-b border-slate-200 pb-1">
-                    <span>ທົງເສື້ອ / ໝາຍເຫດ:</span>
-                    <span className="font-bold text-amber-800">{selectedPaperForm.fitStyle || '-'}</span>
-                  </div>
-                </div>
-              </div>
-
-              <div className="border border-slate-300 rounded-lg overflow-hidden">
-                <div className="bg-slate-200 px-3 py-1 font-bold text-xs text-center border-b border-slate-300">
-                  ຂະໜາດໂສ້ງ (ກາງເກງ)
-                </div>
-                <div className="p-3 text-xs grid grid-cols-2 gap-x-6 gap-y-1">
-                  <div className="flex justify-between"><span>ຮອບແອວ:</span><b>{selectedPaperForm.pants.waist || '-'}</b></div>
-                  <div className="flex justify-between"><span>ຮອບສະໂພກ:</span><b>{selectedPaperForm.pants.hips || '-'}</b></div>
-                  <div className="flex justify-between"><span>ຍາວໂສ້ງ:</span><b>{selectedPaperForm.pants.length || '-'}</b></div>
-                  <div className="flex justify-between"><span>ແອວລົງ/ຮອບກົກຂາ:</span><b>{selectedPaperForm.pants.thigh || '-'}</b></div>
-                </div>
-              </div>
-
-              <div className="pt-2 flex justify-between items-end border-t-2 border-slate-300">
-                <div className="border-2 border-blue-600 rounded-full px-4 py-2 text-center text-blue-700 -rotate-6 bg-blue-50/50">
-                  <div className="text-[10px] font-bold">ກວດກາ (ອະນຸມັດແລ້ວ)</div>
-                  <div className="text-xs font-black">{selectedPaperForm.inspector}</div>
-                  <div className="text-[9px] font-semibold">{selectedPaperForm.date}</div>
-                </div>
-
                 <div className="flex gap-2">
-                  <button
-                    onClick={() => window.print()}
-                    className="bg-slate-900 hover:bg-slate-800 text-white text-xs px-4 py-2 rounded-xl font-bold flex items-center gap-1.5 shadow"
-                  >
-                    <Printer className="w-4 h-4" /> ພິມໃບແທກຕົວ
-                  </button>
-                  <button
-                    onClick={() => setSelectedPaperForm(null)}
-                    className="bg-slate-200 hover:bg-slate-300 text-slate-800 text-xs px-4 py-2 rounded-xl font-bold"
-                  >
-                    ປິດໜ້າຕ່າງ
-                  </button>
+                  <span className="font-bold">ຊື່ ແລະ ນາມສະກຸນ:</span>
+                  <span className="font-bold text-blue-900 border-b border-dotted border-slate-600 px-2 flex-1">{selectedPaperForm.customerName}</span>
+                </div>
+                <div className="grid grid-cols-2 gap-2">
+                  <div><span className="font-bold">ເບີໂທ:</span> {selectedPaperForm.phone}</div>
+                  <div><span className="font-bold">ສາຂາ:</span> {selectedPaperForm.branch}</div>
                 </div>
               </div>
 
+              <div className="border border-slate-300 rounded-lg p-3 text-xs grid grid-cols-2 gap-2 bg-slate-50">
+                <div>ບ່າໄຫຼ່: <b>{selectedPaperForm.suit.shoulder || '-'}</b></div>
+                <div>ຮອບອົກ: <b>{selectedPaperForm.suit.chest || '-'}</b></div>
+                <div>ຍາວແຂນ: <b>{selectedPaperForm.suit.sleeveLength || '-'}</b></div>
+                <div>ຍາວເສື້ອ: <b>{selectedPaperForm.suit.jacketLength || '-'}</b></div>
+                <div>ຮອບແອວ: <b>{selectedPaperForm.suit.waist || '-'}</b></div>
+                <div>ຮອບສະໂພກ: <b>{selectedPaperForm.suit.hips || '-'}</b></div>
+              </div>
+
+              <div className="pt-2 flex justify-between items-center">
+                <button onClick={() => window.print()} className="bg-slate-900 text-white px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-1">
+                  <Printer className="w-4 h-4" /> ພິມໃບແທກ
+                </button>
+                <button onClick={() => setSelectedPaperForm(null)} className="bg-slate-200 text-slate-800 px-4 py-2 rounded-xl text-xs font-bold">
+                  ປິດ
+                </button>
+              </div>
             </div>
           </div>
         </div>
       )}
 
-      {/* ==================== MODAL 3: ADD NEW MEASUREMENT RECORD ==================== */}
+      {/* ==================== MODAL 3: NEW MEASUREMENT ==================== */}
       {showNewMeasurementModal && (
         <div className="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 overflow-y-auto">
           <div className="bg-white rounded-3xl max-w-2xl w-full p-6 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto text-xs">
             <div className="flex justify-between items-center border-b pb-3">
               <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
-                <Scissors className="text-amber-600 w-5 h-5" /> ບັນທຶກຟອມແທກເຄື່ອງໃໝ່ (KHAMLAR Sheet)
+                <Scissors className="text-amber-600 w-5 h-5" /> ບັນທຶກຟອມແທກເຄື່ອງໃໝ່
               </h3>
               <button onClick={() => setShowNewMeasurementModal(false)} className="text-slate-400 text-lg font-bold">✕</button>
             </div>
 
             <form onSubmit={handleAddNewMeasurement} className="space-y-4">
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div className="grid grid-cols-3 gap-3">
                 <div>
-                  <label className="block font-semibold mb-1">ລະຫັດ prefix</label>
+                  <label className="block font-semibold mb-1">Prefix</label>
                   <select
                     value={newForm.orderCode}
                     onChange={(e) => setNewForm({ ...newForm, orderCode: e.target.value })}
@@ -1423,21 +1305,21 @@ export default function App() {
                   </select>
                 </div>
                 <div>
-                  <label className="block font-semibold mb-1">ເລກລະຫັດເຄື່ອງ (Custom Code)</label>
+                  <label className="block font-semibold mb-1">ເລກລະຫັດ (Custom Code)</label>
                   <input
                     type="text"
-                    placeholder="ເຊັ່ນ 088 ຫຼື 001"
+                    placeholder="ເຊັ່ນ 088"
                     value={newForm.customIdNumber}
                     onChange={(e) => setNewForm({ ...newForm, customIdNumber: e.target.value })}
-                    className="w-full p-2 border rounded-xl font-mono font-bold text-slate-800"
+                    className="w-full p-2 border rounded-xl font-bold"
                   />
                 </div>
                 <div>
-                  <label className="block font-semibold mb-1">ຊື່ ແລະ ນາມສະກຸນ ລູກຄ້າ</label>
+                  <label className="block font-semibold mb-1">ຊື່ ແລະ ນາມສະກຸນ</label>
                   <input
                     required
                     type="text"
-                    placeholder="ເຊັ່ນ ທ້າວ ອົງຄຳ เพັງລໍ້"
+                    placeholder="ເຊັ່ນ ທ້າວ ອົງຄຳ"
                     value={newForm.customerName}
                     onChange={(e) => setNewForm({ ...newForm, customerName: e.target.value })}
                     className="w-full p-2 border rounded-xl"
@@ -1445,16 +1327,7 @@ export default function App() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-3 gap-3">
-                <div>
-                  <label className="block font-semibold mb-1">ສາຂາ</label>
-                  <input
-                    type="text"
-                    value={newForm.branch}
-                    onChange={(e) => setNewForm({ ...newForm, branch: e.target.value })}
-                    className="w-full p-2 border rounded-xl"
-                  />
-                </div>
+              <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block font-semibold mb-1">ເບີໂທລະສັບ</label>
                   <input
@@ -1466,34 +1339,83 @@ export default function App() {
                   />
                 </div>
                 <div>
-                  <label className="block font-semibold mb-1">ທົງເສື້ອ / Fit Style</label>
+                  <label className="block font-semibold mb-1">ສາຂາ</label>
                   <input
                     type="text"
-                    placeholder="ເຊັ່ນ mòi ôm ôm (Slim fit)"
-                    value={newForm.fitStyle}
-                    onChange={(e) => setNewForm({ ...newForm, fitStyle: e.target.value })}
+                    value={newForm.branch}
+                    onChange={(e) => setNewForm({ ...newForm, branch: e.target.value })}
                     className="w-full p-2 border rounded-xl"
                   />
                 </div>
               </div>
 
               <div className="border-t pt-3 space-y-2">
-                <h4 className="font-bold text-amber-900">ຂະໜາດເສື້ອແວັດ / ເສື້ອເຊີດ / ເສື້ອເກັກ:</h4>
+                <h4 className="font-bold text-amber-900">ຂະໜາດເສື້ອແວັດ / ເຊີດ:</h4>
                 <div className="grid grid-cols-4 gap-2">
-                  <input type="text" placeholder="ບ່າໄຫຼ່ (47)" onChange={(e) => setNewForm({ ...newForm, suit: { ...newForm.suit, shoulder: e.target.value } })} className="p-2 border rounded-xl" />
-                  <input type="text" placeholder="ຍາວແຂນ (58)" onChange={(e) => setNewForm({ ...newForm, suit: { ...newForm.suit, sleeveLength: e.target.value } })} className="p-2 border rounded-xl" />
-                  <input type="text" placeholder="ຍາວເສື້ອ (68)" onChange={(e) => setNewForm({ ...newForm, suit: { ...newForm.suit, jacketLength: e.target.value } })} className="p-2 border rounded-xl" />
-                  <input type="text" placeholder="ຮອບອົກ (97)" onChange={(e) => setNewForm({ ...newForm, suit: { ...newForm.suit, chest: e.target.value } })} className="p-2 border rounded-xl" />
-                  <input type="text" placeholder="ບ່າຫຼັງ (39)" onChange={(e) => setNewForm({ ...newForm, suit: { ...newForm.suit, backShoulder: e.target.value } })} className="p-2 border rounded-xl" />
-                  <input type="text" placeholder="ຮອບແອວ (85)" onChange={(e) => setNewForm({ ...newForm, suit: { ...newForm.suit, waist: e.target.value } })} className="p-2 border rounded-xl" />
-                  <input type="text" placeholder="ຕົ້ນແຂນ (35)" onChange={(e) => setNewForm({ ...newForm, suit: { ...newForm.suit, upperArm: e.target.value } })} className="p-2 border rounded-xl" />
-                  <input type="text" placeholder="ຮອບແຂນ (20)" onChange={(e) => setNewForm({ ...newForm, suit: { ...newForm.suit, armhole: e.target.value } })} className="p-2 border rounded-xl" />
+                  <input type="text" placeholder="ບ່າໄຫຼ່" onChange={(e) => setNewForm({ ...newForm, suit: { ...newForm.suit, shoulder: e.target.value } })} className="p-2 border rounded-xl" />
+                  <input type="text" placeholder="ຍາວແຂນ" onChange={(e) => setNewForm({ ...newForm, suit: { ...newForm.suit, sleeveLength: e.target.value } })} className="p-2 border rounded-xl" />
+                  <input type="text" placeholder="ຍາວເສື້ອ" onChange={(e) => setNewForm({ ...newForm, suit: { ...newForm.suit, jacketLength: e.target.value } })} className="p-2 border rounded-xl" />
+                  <input type="text" placeholder="ຮອບອົກ" onChange={(e) => setNewForm({ ...newForm, suit: { ...newForm.suit, chest: e.target.value } })} className="p-2 border rounded-xl" />
                 </div>
               </div>
 
               <div className="pt-3 flex justify-end gap-2 border-t">
                 <button type="button" onClick={() => setShowNewMeasurementModal(false)} className="px-4 py-2 bg-slate-100 rounded-xl font-bold">ຍົກເລີກ</button>
-                <button type="submit" className="px-5 py-2 bg-amber-500 hover:bg-amber-600 text-slate-950 font-extrabold rounded-xl shadow">ບັນທຶກຂໍ້ມູນຟອມ</button>
+                <button type="submit" className="px-5 py-2 bg-amber-500 text-slate-950 font-bold rounded-xl">ບັນທຶກ</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* ==================== MODAL 4: NEW ALTERATION RECORD ==================== */}
+      {showNewAlterationModal && (
+        <div className="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-4 text-xs">
+            <div className="flex justify-between items-center border-b pb-2">
+              <h3 className="font-bold text-slate-900 text-sm">ບັນທຶກແປງເຄື່ອງ (Alteration Log)</h3>
+              <button onClick={() => setShowNewAlterationModal(false)} className="text-slate-400 font-bold">✕</button>
+            </div>
+
+            <form onSubmit={handleAddAlteration} className="space-y-3">
+              <div>
+                <label className="block font-semibold mb-1">ຊື່ລູກຄ້າ</label>
+                <input
+                  required
+                  type="text"
+                  placeholder="ເຊັ່ນ ທ້າວ ສຸວະສອນ"
+                  value={newAltForm.customerName}
+                  onChange={(e) => setNewAltForm({ ...newAltForm, customerName: e.target.value })}
+                  className="w-full p-2 border rounded-xl"
+                />
+              </div>
+
+              <div>
+                <label className="block font-semibold mb-1">ລະຫັດຊຸດ (Code)</label>
+                <input
+                  type="text"
+                  placeholder="ເຊັ່ນ JDB-01"
+                  value={newAltForm.code}
+                  onChange={(e) => setNewAltForm({ ...newAltForm, code: e.target.value })}
+                  className="w-full p-2 border rounded-xl"
+                />
+              </div>
+
+              <div>
+                <label className="block font-semibold mb-1">ລາຍລະອຽດແປງເຄື່ອງ</label>
+                <textarea
+                  required
+                  rows={3}
+                  placeholder="ເຊັ່ນ ເອົາຂ້າງອອກ 1 ນິ້ວ, ເອົາຄ່າຂາສົ່ງລົງ..."
+                  value={newAltForm.details}
+                  onChange={(e) => setNewAltForm({ ...newAltForm, details: e.target.value })}
+                  className="w-full p-2 border rounded-xl"
+                />
+              </div>
+
+              <div className="pt-2 flex justify-end gap-2 border-t">
+                <button type="button" onClick={() => setShowNewAlterationModal(false)} className="px-4 py-2 bg-slate-100 rounded-xl font-bold">ຍົກເລີກ</button>
+                <button type="submit" className="px-5 py-2 bg-indigo-600 text-white font-bold rounded-xl">ບັນທຶກລົງປຶ້ມ</button>
               </div>
             </form>
           </div>
